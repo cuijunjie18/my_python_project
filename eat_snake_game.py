@@ -11,6 +11,7 @@ from settings import Settings
 from snake_head import SnakeHead
 from snake_body import SnakeBody
 from food import Food
+from scoreboard import ScoreBoard
 
 #导入统计信息
 from game_stats import GameStats
@@ -20,6 +21,7 @@ class EatSnake:
 
     def __init__(self):
         """游戏资源初始化"""
+        pygame.init()
         #创建游戏时钟及设置
         self.clock = pygame.time.Clock()
         self.settings = Settings()
@@ -30,6 +32,8 @@ class EatSnake:
 
         #建立统计信息
         self.stats = GameStats()
+        self.sb = ScoreBoard(self)
+        self.sb.prep_score()
 
         #建立初始游戏移动方向
         self.direction_x = self.settings.direction_x
@@ -49,13 +53,13 @@ class EatSnake:
         self.food_make()
 
         #游戏状态
-        self.game_active = True
+        self.game_active = 1
 
     def run_game(self):
         """游戏运行的主程序"""
         while True:
             self._check_event()
-            if self.game_active:
+            if self.game_active == 1:
                 self._snake_update()
                 self._check_head_body_collide()
                 self._check_eat_food()
@@ -84,7 +88,7 @@ class EatSnake:
             self.direction_x = 1
             self.direction_y = 0
         elif event.key == pygame.K_SPACE:
-            self.game_active = False
+            self.game_active *= -1
         elif event.key == pygame.K_q:
             sys.exit()
 
@@ -138,7 +142,7 @@ class EatSnake:
         """检测蛇的头与身体的碰撞"""
         if pygame.sprite.spritecollideany(self.snake_head,self.snake_body):
             sleep(0.5)
-            self.game_active = False
+            self.game_active = -1
 
     def food_make(self):
         """随机生成食物"""
@@ -152,6 +156,8 @@ class EatSnake:
         """检测食物与蛇头的碰撞"""
         if self.snake_head.rect.colliderect(self.food.rect):
             self.stats.snake_length += 1
+            self.stats.score += 1
+            self.sb.prep_score()
             self.food_make()
             self._increase_body()
 
@@ -175,6 +181,8 @@ class EatSnake:
             body.draw_body()
         #绘制食物
         self.food.blitme_food()
+        #展示得分
+        self.sb.show_score()
         #刷新最新屏幕
         pygame.display.flip()
 
