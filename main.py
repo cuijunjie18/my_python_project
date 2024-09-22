@@ -3,6 +3,7 @@ import numpy as np
 import Track as Tr
 
 # 识别的颜色 BGR = (0,0,254)
+# 可乐瓶盖 BGR = (71,31,200)
 # 展示函数
 def show(img,title = 'Test'):
     cv2.imshow(title,img)
@@ -12,8 +13,8 @@ def show(img,title = 'Test'):
 # 根据给定的HSV图像确定追踪的HSV的上下界
 def cvt_hsv(hsv):
     b = hsv[0][0][0]
-    l_hsv = np.uint8([[[b-50,100,100]]])
-    h_hsv = np.uint8([[[b+50,255,255]]])
+    l_hsv = np.uint8([[[b-30,100,100]]]) # """括号一定只能一个"""
+    h_hsv = np.uint8([[[b+30,255,255]]])
     return l_hsv,h_hsv
 
 # 基于轮廓查找的图像追踪
@@ -25,7 +26,7 @@ def Track(origin,mask):
     
 
 # 确定待识别的颜色,注意要shape为(1,1,1)   
-track_color = np.uint8([[[93,48,141]]]) # BGR格式
+track_color = np.uint8([[[71,31,200]]]) # BGR格式
 hsv = cv2.cvtColor(track_color,cv2.COLOR_BGR2HSV)
 l_hsv,h_hsv = cvt_hsv(hsv)
 print(hsv)
